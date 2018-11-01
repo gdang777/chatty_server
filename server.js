@@ -21,18 +21,34 @@ const wss = new SocketServer({ server });
 // the ws parameter in the callback.
 wss.on('connection', (ws) => {
   console.log('Client connected');
-  ws.on('message', (incomingMessage) => {
-    const parsedMessage = JSON.parse(incomingMessage);
-    // console.log(`${parsedMessage.username} says ${parsedMessage.content}`);
-    // console.log("incoming new", incomingMessage);
-    let newObj = {
-            id: uuidv4(),
-            username: parsedMessage.username,
-            content:  parsedMessage.content
-        }
-    wss.clients.forEach(client => {
-        client.send(JSON.stringify(newObj));
-    });
+  ws.on('message', (incomingMessageOnServer) => {
+    const parsedMessage = JSON.parse(incomingMessageOnServer);
+    console.log("server", parsedMessage);
+
+    switch(parsedMessage.type) {
+    case 'postMessage':
+      let newObj = {
+              id: uuidv4(),
+              type: 'incomingMessage',
+              username: parsedMessage.username,
+              content:  parsedMessage.content
+          }
+      wss.clients.forEach(client => {
+          client.send(JSON.stringify(newObj));
+      });
+      break;
+    case 'postNotification':
+      let newObj1 = {
+              id: uuidv4(),
+              type: 'incomingNotification',
+              content:  parsedMessage.content
+          }
+
+      wss.clients.forEach(client => {
+          client.send(JSON.stringify(newObj1));
+      });
+      break;
+    }
   })
 
 
