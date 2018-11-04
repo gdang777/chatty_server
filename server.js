@@ -20,7 +20,6 @@ wss.on('connection', (ws) => {
         type: 'connectedUsers',
         count: wss.clients.size
       }
-  console.log("connections", users);
 
   wss.clients.forEach(client => {
       client.send(JSON.stringify(users));
@@ -28,7 +27,6 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (incomingMessageOnServer) => {
     const parsedMessage = JSON.parse(incomingMessageOnServer);
-    console.log("server", parsedMessage);
 
     switch(parsedMessage.type) {
     case 'postMessage':
